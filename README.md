@@ -3,10 +3,11 @@
 ***leetify*** is a reverse-engineered REST API that allows you to query for Leet Code questions, lists, etc.
 
 ## Current Endpoints
-<u>Queries all Leet Code problems</u>
+Queries all Leet Code problems:
 ```/list```
-<u>Queries Leet Code problems based on difficulty</u>
+
+Queries Leet Code problems based on difficulty:
 `/list/:difficulty`
 
-<u>Queries a problem based on name</u>
+Queries a problem based on name:
 `/question/:name` 
