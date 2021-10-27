@@ -3,6 +3,7 @@ const axios = require('axios');
 const fs = require('fs');
 
 const app = express();
+const port = 8080;
 
 app.use(express.json());
 
@@ -76,4 +77,26 @@ app.get('/question/:name', (req, res) => {
     });
 });
 
-app.listen(8080, () => console.log('API listening on port 8080'));
+// GET random question
+app.get('/question', (req, res) => {
+    axios({
+        url: leetcode,
+        method: 'POST',
+        data: {
+            query: listQuery,
+            variables: {
+                categorySlug: "",
+                filters: {},
+                limit: null,
+                skip: 0
+            }
+        }
+    }).then((result) => {
+        let questions = result.data['data']['problemsetQuestionList']['questions'];
+        const rdx = Math.floor(Math.random() * questions.length);
+        
+        res.json(questions[rdx]); 
+    });
+});
+
+app.listen(port, () => console.log(`API listening on port ${port}`));
