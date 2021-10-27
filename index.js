@@ -61,6 +61,7 @@ app.get('/list/:difficulty', (req, res) => {
 // GET question by name
 app.get('/question', (req, res) => {
     let name = req.query.name;
+    let category = req.query.category;
     let difficulty = req.query.difficulty;
 
     let query, variables;
@@ -70,11 +71,11 @@ app.get('/question', (req, res) => {
 
     if (query == listQuery) {
         if (difficulty != null) difficulty = difficulty.toUpperCase();
-
+        if (category == null) category = "";
         if (difficulty != "EASY" && difficulty != "MEDIUM" && difficulty != "HARD") difficulty = null;
 
         variables = {
-            categorySlug: "",
+            categorySlug: category,
             filters: {"difficulty": difficulty},
             limit: null,
             skip: 0   
