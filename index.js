@@ -59,43 +59,49 @@ app.get('/list/:difficulty', (req, res) => {
 });
 
 // GET question by name
-app.get('/question/:name', (req, res) => {
-    let { name } = req.params
+app.get('/question', (req, res) => {
+    let name = req.query.name;
+    let difficulty = req.query.difficulty;
+
+    let query, variables;
+    
+    if (name == null) query = listQuery;
+    else query = questionQuery;
+
+    if (query == listQuery) {
+        if (difficulty != null) difficulty = difficulty.toUpperCase();
+
+        if (difficulty != "EASY" && difficulty != "MEDIUM" && difficulty != "HARD") difficulty = null;
+
+        variables = {
+            categorySlug: "",
+            filters: {"difficulty": difficulty},
+            limit: null,
+            skip: 0   
+        }
+    } else if (query == questionQuery) {
+        variables = {
+            titleSlug: name
+        }
+    }
 
     axios({
         url: 'https://leetcode.com/graphql',
         method: 'POST',
         data: {
-            query: questionQuery,
-            variables: {
-                titleSlug: name
-            }
+            query: query,
+            variables: variables
         }
     }).then((result) => {
-        if (result.data['data']['question'] == null) res.json({"error": "question does not exist"});
-        else res.json(result.data);
-    });
-});
+        if (query == listQuery) {
+            let questions = result.data['data']['problemsetQuestionList']['questions'];
+            const rdx = Math.floor(Math.random() * questions.length);
 
-// GET random question
-app.get('/question', (req, res) => {
-    axios({
-        url: leetcode,
-        method: 'POST',
-        data: {
-            query: listQuery,
-            variables: {
-                categorySlug: "",
-                filters: {},
-                limit: null,
-                skip: 0
-            }
+            res.json(questions[rdx]);
+        } else if (query == questionQuery) {
+            if (result.data['data']['question'] == null) res.json({"error": "question does not exist"});
+            else res.json(result.data);
         }
-    }).then((result) => {
-        let questions = result.data['data']['problemsetQuestionList']['questions'];
-        const rdx = Math.floor(Math.random() * questions.length);
-        
-        res.json(questions[rdx]); 
     });
 });
 
